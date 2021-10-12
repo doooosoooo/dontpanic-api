@@ -16,6 +16,7 @@ Selected by User
 {% endswagger-parameter %}
 
 {% swagger-response status="200: OK" description="" %}
+
 ```javascript
 {
     nickname: [string],
@@ -23,5 +24,6 @@ Selected by User
     level: [number]
 }
 ```
+
 {% endswagger-response %}
 {% endswagger %}
