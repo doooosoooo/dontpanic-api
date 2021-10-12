@@ -10,10 +10,26 @@ admin.initializeApp();
 
 export const loginUser = functions.https.onRequest(
   async (request, response) => {
+    console.log(request.body);
     const data = await user.loginUser(request);
+    response.set("Access-Control-Allow-Origin", "*");
     response.send(data);
   }
 );
+
+export const getUser = functions.https.onRequest(async (request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  const queryName = request.query.name;
+  if (queryName !== undefined) {
+    const userData = await user.userData(queryName as string);
+    response.send(userData);
+  } else {
+    response.statusCode = 400;
+    response.send({
+      error: "query error",
+    });
+  }
+});
 
 export const makeNewProject = functions.https.onRequest(
   async (request, response) => {
@@ -21,12 +37,14 @@ export const makeNewProject = functions.https.onRequest(
       request.body.userName,
       request.body.projectName
     );
+    response.set("Access-Control-Allow-Origin", "*");
     response.send(result);
   }
 );
 
 export const getProjectList = functions.https.onRequest(
   async (request, response) => {
+    response.set("Access-Control-Allow-Origin", "*");
     const queryName = request.query.name;
     if (queryName !== undefined) {
       const list = await project.getProjects(queryName as string);
