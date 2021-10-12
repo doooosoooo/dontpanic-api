@@ -4,11 +4,13 @@ class User {
   nickname: string;
   slimeColor: string;
   level: number;
+  isOnline: boolean;
 
   constructor(nickname: string, slimeColor: string, level: number | null) {
     this.nickname = nickname;
     this.slimeColor = slimeColor;
     this.level = level === null ? 1 : level;
+    this.isOnline = true;
   }
 }
 
@@ -28,6 +30,8 @@ export const loginUser = async (data: any): Promise<User> => {
       nickname: newUser.nickname,
       slimeColor: newUser.slimeColor,
       level: newUser.level,
+      projects: [],
+      isOnline: true,
     },
     { merge: true }
   );
