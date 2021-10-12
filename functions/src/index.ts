@@ -39,9 +39,14 @@ export const loginUser = functions.https.onRequest(
       newUser.level = userData.data()?.level;
     }
 
-    db.collection("user")
-      .doc(request.body.nickname)
-      .set(newUser, { merge: true });
+    db.collection("user").doc(request.body.nickname).set(
+      {
+        nickname: newUser.nickname,
+        slimeColor: newUser.slimeColor,
+        level: newUser.level,
+      },
+      { merge: true }
+    );
 
     response.send(request.body);
   }
