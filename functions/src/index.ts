@@ -9,16 +9,14 @@ admin.initializeApp();
 // Start writing Firebase Functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const loginUser = functions.https.onRequest(
-  async (request, response) => {
-    cors(request, response, async () => {
-      const data = await user.loginUser(request);
-      response.send(data);
-    });
-  }
-);
+export const loginUser = functions.https.onRequest((request, response) => {
+  cors(request, response, async () => {
+    const data = await user.loginUser(request);
+    response.send(data);
+  });
+});
 
-export const getUser = functions.https.onRequest(async (request, response) => {
+export const getUser = functions.https.onRequest((request, response) => {
   cors(request, response, async () => {
     const queryName = request.query.name;
 
@@ -34,29 +32,25 @@ export const getUser = functions.https.onRequest(async (request, response) => {
   });
 });
 
-export const makeNewProject = functions.https.onRequest(
-  async (request, response) => {
-    cors(request, response, async () => {
-      const result = await project.makeNewProject(request.body.projectName);
-      response.send(result);
-    });
-  }
-);
+export const makeNewProject = functions.https.onRequest((request, response) => {
+  cors(request, response, async () => {
+    const result = await project.makeNewProject(request.body.projectName);
+    response.send(result);
+  });
+});
 
-export const getProjectList = functions.https.onRequest(
-  async (request, response) => {
-    cors(request, response, async () => {
-      const queryName = request.query.name;
+export const getProjectList = functions.https.onRequest((request, response) => {
+  cors(request, response, async () => {
+    const queryName = request.query.name;
 
-      if (queryName !== undefined) {
-        const list = await project.getProjects(queryName as string);
-        response.send(list);
-      } else {
-        response.statusCode = 400;
-        response.send({
-          error: "query error",
-        });
-      }
-    });
-  }
-);
+    if (queryName !== undefined) {
+      const list = await project.getProjects(queryName as string);
+      response.send(list);
+    } else {
+      response.statusCode = 400;
+      response.send({
+        error: "query error",
+      });
+    }
+  });
+});
