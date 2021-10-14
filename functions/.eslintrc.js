@@ -23,6 +23,8 @@ module.exports = {
   ],
   plugins: ["@typescript-eslint", "import", "prettier"],
   rules: {
+    "@typescript-eslint/no-var-requires": 0,
+    "linebreak-style": 0,
     quotes: ["error", "double"],
     "import/no-unresolved": 0,
     "require-jsdoc": 0,
