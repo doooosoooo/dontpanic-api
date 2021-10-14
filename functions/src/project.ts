@@ -1,66 +1,57 @@
 import * as admin from "firebase-admin";
 
+function getRandomArbitrary(min: number, max: number) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
 class Project {
   id: string;
   name: string;
-  code: ProjectCode;
+  placeX: number;
+  placeY: number;
 
-  constructor(id: string, name: string) {
+  constructor(projectName: string) {
     this.id = "";
-    this.name = name;
-    this.code = new ProjectCode("");
+    this.name = projectName;
+    this.placeX = getRandomArbitrary(100, 800);
+    this.placeY = getRandomArbitrary(100, 500);
   }
 }
 
-class ProjectCode {
-  projectId: string;
-  html: string;
-  css: string;
-  javascript: string;
-
-  constructor(id: string) {
-    this.projectId = id;
-    this.html = "";
-    this.css = "";
-    this.javascript = "";
-  }
-}
-
-export const makeNewProject = async (userName: string, name: string) => {
+export const makeNewProject = async (projectName: string): Promise<Project> => {
   const db = admin.firestore();
-
   const newProjectRef = db.collection("project").doc();
-  const newProject = new Project(newProjectRef.id, name);
+  const newProject = new Project(projectName);
+  newProject.id = newProjectRef.id;
 
-  db.collection("user")
-    .doc(userName)
-    .update({
-      projects: admin.firestore.FieldValue.arrayUnion(newProjectRef.path),
-    });
+  await newProjectRef.set(JSON.parse(JSON.stringify(newProject)));
 
-  await newProjectRef.set({
-    name: newProject.name,
-    user: [db.collection("user").doc(userName).path],
-    code: {
-      html: newProject.code.html,
-      css: newProject.code.css,
-      javascript: newProject.code.javascript,
-    },
-  });
-
-  return {
-    projectId: newProjectRef.id,
-  };
+  return newProject;
 };
 
 export const getProjects = async (userName: string): Promise<any[]> => {
   const db = admin.firestore();
   const userData = (await db.collection("user").doc(userName).get()).data();
   const projectIds = userData?.projects;
+
   const projectList: any[] = [];
+
   for await (const id of projectIds) {
-    const projectData = await db.doc(id).get();
-    projectList.push(projectData.data());
+    const projectData = (await db.doc(id).get()).data();
+    projectList.push(projectData);
   }
+
   return projectList;
+};
+
+export const getAllProjectsId = async (): Promise<any[]> => {
+  const db = admin.firestore();
+  const projectCollectionSnapt = await db.collection("project").get();
+  const projectIdList: string[] = [];
+
+  for await (const projectSnapshot of projectCollectionSnapt.docs) {
+    projectIdList.push("project/" + projectSnapshot.id);
+  }
+
+  return projectIdList;
 };

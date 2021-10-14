@@ -10,7 +10,6 @@ admin.initializeApp();
 
 export const loginUser = functions.https.onRequest(
   async (request, response) => {
-    console.log(request.body);
     const data = await user.loginUser(request);
     response.set("Access-Control-Allow-Origin", "*");
     response.send(data);
@@ -33,10 +32,7 @@ export const getUser = functions.https.onRequest(async (request, response) => {
 
 export const makeNewProject = functions.https.onRequest(
   async (request, response) => {
-    const result = await project.makeNewProject(
-      request.body.userName,
-      request.body.projectName
-    );
+    const result = await project.makeNewProject(request.body.projectName);
     response.set("Access-Control-Allow-Origin", "*");
     response.send(result);
   }
@@ -46,6 +42,7 @@ export const getProjectList = functions.https.onRequest(
   async (request, response) => {
     response.set("Access-Control-Allow-Origin", "*");
     const queryName = request.query.name;
+
     if (queryName !== undefined) {
       const list = await project.getProjects(queryName as string);
       response.send(list);
