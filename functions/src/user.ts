@@ -1,5 +1,7 @@
+import axios from "axios";
 import * as admin from "firebase-admin";
 import { getAllProjectsId } from "./project";
+import { getRandomArbitrary } from "./util";
 
 class User {
   nickname: string;
@@ -8,6 +10,9 @@ class User {
   isOnline: boolean;
   userSkill: string[];
   projects: string[];
+  sendbirdAccessToken: string | null;
+  positionX: number;
+  positionY: number;
 
   constructor(
     nickname: string,
@@ -21,6 +26,9 @@ class User {
     this.isOnline = true;
     this.userSkill = userSkill;
     this.projects = [];
+    this.sendbirdAccessToken = null;
+    this.positionX = getRandomArbitrary(300, 900);
+    this.positionY = getRandomArbitrary(300, 700);
   }
 }
 
@@ -43,6 +51,22 @@ export const loginUser = async (data: any): Promise<User> => {
 
   // Set User's project
   newUser.projects = await getAllProjectsId();
+
+  // AccessToken
+  const response = await axios({
+    method: "PUT",
+    url:
+      "https://api-7F2B58EC-6AF2-463E-B837-84E0B88B593B.sendbird.com/v3/users/" +
+      newUser.nickname,
+    headers: {
+      "Api-Token": "8797c4050c9ff96007511d01dbe1cba1447e7f70",
+    },
+    data: {
+      issue_access_token: "true",
+    },
+  });
+
+  newUser.sendbirdAccessToken = (response.data as any).access_token;
 
   await db
     .collection("user")

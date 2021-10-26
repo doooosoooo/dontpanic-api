@@ -1,8 +1,5 @@
 import * as admin from "firebase-admin";
-
-function getRandomArbitrary(min: number, max: number) {
-  return Math.round(Math.random() * (max - min) + min);
-}
+import { getRandomArbitrary } from "./util";
 
 class Project {
   id: string;
