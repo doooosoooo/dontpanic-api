@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as admin from "firebase-admin";
 import { getAllProjectsId } from "./project";
+import { getRandomArbitrary } from "./util";
 
 class User {
   nickname: string;
@@ -10,6 +11,8 @@ class User {
   userSkill: string[];
   projects: string[];
   sendbirdAccessToken: string | null;
+  positionX: number;
+  positionY: number;
 
   constructor(
     nickname: string,
@@ -24,6 +27,8 @@ class User {
     this.userSkill = userSkill;
     this.projects = [];
     this.sendbirdAccessToken = null;
+    this.positionX = getRandomArbitrary(300, 900);
+    this.positionY = getRandomArbitrary(300, 700);
   }
 }
 
