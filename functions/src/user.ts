@@ -33,6 +33,7 @@ class User {
 }
 
 export const loginUser = async (data: any): Promise<User> => {
+  let sendbirdResponse = null as any;
   const db = admin.firestore();
   const newUser = new User(
     data.body.nickname,
@@ -53,20 +54,38 @@ export const loginUser = async (data: any): Promise<User> => {
   newUser.projects = await getAllProjectsId();
 
   // AccessToken
-  const response = await axios({
-    method: "PUT",
-    url:
-      "https://api-7F2B58EC-6AF2-463E-B837-84E0B88B593B.sendbird.com/v3/users/" +
-      newUser.nickname,
-    headers: {
-      "Api-Token": "8797c4050c9ff96007511d01dbe1cba1447e7f70",
-    },
-    data: {
-      issue_access_token: "true",
-    },
-  });
+  const newUserRef = db.collection("user").doc(newUser.nickname);
+  const newUserData = await newUserRef.get();
+  if (!newUserData.exists) {
+    sendbirdResponse = await axios({
+      method: "POST",
+      url: "https://api-7F2B58EC-6AF2-463E-B837-84E0B88B593B.sendbird.com/v3/users/",
+      headers: {
+        "Api-Token": "8797c4050c9ff96007511d01dbe1cba1447e7f70",
+      },
+      data: {
+        user_id: newUser.nickname,
+        nickname: newUser.nickname,
+        profile_url: "",
+        issue_access_token: "true",
+      },
+    });
+  } else {
+    sendbirdResponse = await axios({
+      method: "PUT",
+      url:
+        "https://api-7F2B58EC-6AF2-463E-B837-84E0B88B593B.sendbird.com/v3/users/" +
+        newUser.nickname,
+      headers: {
+        "Api-Token": "8797c4050c9ff96007511d01dbe1cba1447e7f70",
+      },
+      data: {
+        issue_access_token: "true",
+      },
+    });
+  }
 
-  newUser.sendbirdAccessToken = (response.data as any).access_token;
+  newUser.sendbirdAccessToken = (sendbirdResponse.data as any).access_token;
 
   await db
     .collection("user")
